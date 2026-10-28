@@ -1,0 +1,50 @@
+[strategy]
+multifactor_weight = 0.95
+lightgbm_weight = 0.05
+signal_time = "close_t"
+execution_time = "open_t_plus_1"
+
+[features]
+eligibility_lookback = 32
+technical_feature_count = 17
+include_multifactor_rank = true
+target = "open[t+6] / open[t+1] - 1"
+
+[split]
+train_start = "2019-01-01"
+train_end = "2023-01-01"
+early_start = "2023-01-01"
+early_end = "2023-07-01"
+validation_start = "2023-07-01"
+validation_end = "2024-01-01"
+evaluation_start = "2024-07-01"
+
+[model]
+seeds = [23, 37, 53, 71]
+objective = "lambdarank"
+n_estimators = 600
+learning_rate = 0.035
+num_leaves = 31
+max_depth = 7
+min_child_samples = 200
+reg_alpha = 0.05
+reg_lambda = 2.0
+colsample_bytree = 0.85
+subsample = 0.8
+subsample_freq = 1
+lambdarank_truncation_level = 40
+early_stopping_rounds = 60
+
+[account]
+capital = 10000000
+topk = 30
+min_hold = 5
+retention = 2.0
+resize_band = 0.2
+side_cap = 0.10
+commission = 0.0003
+slippage = 0.001
+stamp_tax = 0.0005
+max_participation = 0.01
+lot = 100
+formal_repeats = 4

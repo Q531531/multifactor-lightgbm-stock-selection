@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multifactor-lightgbm-stock-selection"
+version = "1.1.0"
+description = "多因子评分与 LightGBM 五日收益排序头的 95%/5% 横截面融合选股策略"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+train = ["lightgbm>=4.3", "scikit-learn>=1.4"]
+parquet = ["pyarrow>=15"]
+dev = ["pytest>=8", "ruff>=0.8"]
+deep = ["torch>=2.2", "pyqlib>=0.9.6"]
+
+[project.scripts]
+factor-fusion = "original5_strategy.cli:main"
+strategy-pipeline = "original5_strategy.pipeline:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff.lint]
+select = ["F"]

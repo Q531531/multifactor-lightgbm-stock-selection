@@ -1,0 +1,46 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        python: ["3.11", "3.12"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - name: Install
+        run: pip install -e ".[dev,train,parquet]"
+      - name: Unit and synthetic integration tests
+        run: |
+          ruff check src tests examples scripts
+          ruff format --check src tests examples scripts
+          python -m unittest discover -s tests -v
+      - name: Synthetic end-to-end replay
+        run: python examples/run_synthetic_pipeline.py --output /tmp/synthetic_output
+      - name: Installed CLI
+        run: |
+          strategy-pipeline --help
+          factor-fusion --help
+  deep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: CPU PyTorch
+        run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - name: Full optional dependencies
+        run: pip install -e ".[dev,train,parquet,deep]"
+      - name: Network, Qlib and all regressions
+        run: python -m unittest discover -s tests -v
